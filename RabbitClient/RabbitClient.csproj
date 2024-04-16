@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>SGSX.$(MSBuildProjectName)</AssemblyName>
+    <RootNamespace>$(AssemblyName)</RootNamespace>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<Using Include="System; System.Text;" />
+		<Using Include="System.Collections.Generic; System.Linq;" />
+		<Using Include="System.Threading.Tasks;" />
+	</ItemGroup>
+	
+</Project>
