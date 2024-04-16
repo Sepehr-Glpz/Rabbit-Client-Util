@@ -13,5 +13,15 @@
 		<Using Include="System.Collections.Generic; System.Linq;" />
 		<Using Include="System.Threading.Tasks;" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Connection\" />
+	  <Folder Include="Interfaces\" />
+	  <Folder Include="Core\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
+	</ItemGroup>
 	
 </Project>
