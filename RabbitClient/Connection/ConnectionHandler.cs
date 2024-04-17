@@ -8,7 +8,7 @@ internal class ConnectionHandler : IRabbitConnection
 {
     #region Constructor
 
-    public ConnectionHandler(BrokerConfig config) =>
+    public ConnectionHandler(ConnectionConfig config) =>
         (Config, Channels, OnDisconnect) = (config, new(this), new Action(() => { }));
 
     #endregion
@@ -22,13 +22,16 @@ internal class ConnectionHandler : IRabbitConnection
         true => ConnectionInstance!,
         false => throw new InvalidOperationException("Client is not Connected!"),
     };
-    protected BrokerConfig Config { get; }
+
+    protected ConnectionConfig Config { get; }
 
     public ChannelHandler Channels { get; }
 
     public event Action OnDisconnect;
 
     public bool IsConnected => ConnectionInstance?.IsOpen ?? false;
+
+    public bool IsAsyncConsumeMode => Config.AsyncConsumers;
 
     #endregion
 
@@ -56,6 +59,7 @@ internal class ConnectionHandler : IRabbitConnection
                 AutomaticRecoveryEnabled = true,
                 NetworkRecoveryInterval = TimeSpan.FromSeconds(3),
                 TopologyRecoveryEnabled = true,
+                DispatchConsumersAsync = Config.AsyncConsumers,
             };
 
             ConnectionInstance = Config switch
