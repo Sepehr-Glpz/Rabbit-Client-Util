@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 
 namespace SGSX.RabbitClient.Interfaces;
-public interface IClient
+public interface IRabbitClient
 {
     Task ConnectAsync(CancellationToken ct);
     Task DisconnectAsync(CancellationToken ct);
