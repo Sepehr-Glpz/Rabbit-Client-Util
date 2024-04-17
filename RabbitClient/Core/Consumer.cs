@@ -16,7 +16,7 @@ internal class Consumer(ConnectionHandler connection, HandlerFactory handlerFact
 
     #region Methods
 
-    public void Consume(string group, string queue, string? consumerTag, bool exclusive, IDictionary<string, object>? args)
+    public IBasicConsumer Consume(string group, string queue, string? consumerTag, bool exclusive, IDictionary<string, object>? args)
     {
         var channel = KeysThreadChannel(queue);
 
@@ -27,6 +27,8 @@ internal class Consumer(ConnectionHandler connection, HandlerFactory handlerFact
         };
 
         channel.BasicConsume(consumer: consumer, queue: queue, autoAck: false, consumerTag: consumerTag, exclusive: exclusive, arguments: args);
+
+        return consumer;
     }
 
     private AsyncEventingBasicConsumer CreateAsyncConsumer(string group, IModel channel)
