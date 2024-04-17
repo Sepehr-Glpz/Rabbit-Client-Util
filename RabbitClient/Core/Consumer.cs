@@ -16,27 +16,27 @@ internal class Consumer(ConnectionHandler connection, HandlerFactory handlerFact
 
     #region Methods
 
-    public void Consume(string queue, string? consumerTag, bool exclusive, IDictionary<string, object>? args)
+    public void Consume(string group, string queue, string? consumerTag, bool exclusive, IDictionary<string, object>? args)
     {
         var channel = KeysThreadChannel(queue);
 
         IBasicConsumer consumer = Connection.IsAsyncConsumeMode switch
         {
-            true => CreateAsyncConsumer(queue, channel),
+            true => CreateAsyncConsumer(group, channel),
             _ => throw new NotImplementedException(),
         };
 
         channel.BasicConsume(consumer: consumer, queue: queue, autoAck: false, consumerTag: consumerTag, exclusive: exclusive, arguments: args);
     }
 
-    private AsyncEventingBasicConsumer CreateAsyncConsumer(string queue, IModel channel)
+    private AsyncEventingBasicConsumer CreateAsyncConsumer(string group, IModel channel)
     {
         var consumer = new AsyncEventingBasicConsumer(channel);
         consumer.Received += async (sender, args) =>
         {
             try
             {
-                var handlers = HandlerFactory.GetAsyncHandlers(queue);
+                var handlers = HandlerFactory.GetAsyncHandlers(group);
 
                 var results = await Task.WhenAll(handlers.Select(s => s.HandleAsync(new HandleArgs(s, args))));
 

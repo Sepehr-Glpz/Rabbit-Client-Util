@@ -10,7 +10,7 @@ internal class HandlerFactory
     public HandlerFactory(IEnumerable<Type> handlerTypes, IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
-        QueueAsyncHandlers = CreateQueueAsyncHandlerTypeMap(handlerTypes);
+        GroupAsyncHandlers = CreateQueueAsyncHandlerTypeMap(handlerTypes);
     }
 
     #endregion
@@ -18,22 +18,17 @@ internal class HandlerFactory
     #region Fields
 
     private readonly IServiceProvider _serviceProvider;
-    protected IReadOnlyDictionary<string, IEnumerable<Type>> QueueAsyncHandlers { get; }
+    protected IReadOnlyDictionary<string, IEnumerable<Type>> GroupAsyncHandlers { get; }
 
     #endregion
 
     #region Methods
 
-    public IEnumerable<IAsyncHandler> GetAsyncHandlers(string queue)
-    {
-        var types = QueueAsyncHandlers[queue];
-
-        foreach (var type in types)
-        {
-            if(_serviceProvider.GetService(type) is IAsyncHandler handler)
-                yield return handler;
-        }
-    }
+    public IEnumerable<IAsyncHandler> GetAsyncHandlers(string group) =>
+        GroupAsyncHandlers[group]
+            .Where(type => type is IAsyncHandler)
+            .Select(type => _serviceProvider.GetService(type))
+            .Cast<IAsyncHandler>();
 
     private static Dictionary<string, IEnumerable<Type>> CreateQueueAsyncHandlerTypeMap(IEnumerable<Type> types)
     {
@@ -43,11 +38,11 @@ internal class HandlerFactory
             if (type.IsAssignableTo(typeof(IAsyncHandler)))
                 continue;
 
-            foreach(var att in type.GetCustomAttributes<HandleQueueAttribute>())
+            foreach(var att in type.GetCustomAttributes<HandlerGroupAttribute>())
             {
-                var current = map[att.Queue] ?? [];
+                var current = map[att.Group] ?? [];
 
-                map[att.Queue] = current.Append(type);
+                map[att.Group] = current.Append(type);
             }
         }
         return map;
