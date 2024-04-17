@@ -15,8 +15,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Connection\" />
-	  <Folder Include="Interfaces\" />
 	  <Folder Include="Core\" />
 	</ItemGroup>
 
