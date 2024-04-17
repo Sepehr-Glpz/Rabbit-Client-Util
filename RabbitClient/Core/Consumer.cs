@@ -1,14 +1,16 @@
-﻿using RabbitMQ.Client;
+﻿using Microsoft.Extensions.DependencyInjection;
+using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using SGSX.RabbitClient.Connection;
 using SGSX.RabbitClient.Handler;
 using SGSX.RabbitClient.Interfaces;
 
 namespace SGSX.RabbitClient.Core;
-internal class Consumer(ConnectionHandler connection, HandlerFactory handlerFactory) : IConsumer
+internal class Consumer(ConnectionHandler connection, HandlerFactory handlerFactory, IServiceProvider serviceProvider) : IConsumer
 {
     #region Fields
 
+    private readonly IServiceProvider _serviceProvider = serviceProvider;
     protected HandlerFactory HandlerFactory { get; } = handlerFactory;
     protected ConnectionHandler Connection { get; } = connection;
 
@@ -38,7 +40,9 @@ internal class Consumer(ConnectionHandler connection, HandlerFactory handlerFact
         {
             try
             {
-                var handlers = HandlerFactory.GetAsyncHandlers(group);
+                using var scope = _serviceProvider.CreateScope();
+
+                var handlers = HandlerFactory.GetAsyncHandlers(group, scope.ServiceProvider);
 
                 var results = await Task.WhenAll(handlers.Select(s => s.HandleAsync(new HandleArgs(s, args))));
 

@@ -1,4 +1,6 @@
-﻿namespace SGSX.RabbitClient.Configuration;
+﻿using System.Runtime.CompilerServices;
+
+namespace SGSX.RabbitClient.Configuration;
 
 internal class ConnectionConfig
 {
@@ -14,6 +16,18 @@ internal class ConnectionConfig
     {
         public string? Host { get; set; }
         public ushort? Port { get; set; }
+    }
+
+    public static ConnectionConfig operator +(ConnectionConfig left, ConnectionConfig right)
+    {
+        left.Username = right.Username;
+        left.Password = right.Password;
+        left.VirtualHost = right.VirtualHost;
+        left.DefaultHost = right.DefaultHost;
+        left.DefaultPort = right.DefaultPort;
+        left.Endpoints = right.Endpoints;
+        left.AsyncConsumers = right.AsyncConsumers;
+        return left;
     }
 }
 
