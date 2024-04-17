@@ -1,12 +1,13 @@
 ﻿using SGSX.RabbitClient.Configuration;
 using SGSX.RabbitClient.Connection;
 using SGSX.RabbitClient.Interfaces;
+using Microsoft.Extensions.Options;
 
 namespace SGSX.RabbitClient.Core;
-internal class TopologyHandler(ConnectionHandler connection, MappingConfig mapping) : ITopology
+internal class TopologyHandler(ConnectionHandler connection, IOptions<MappingConfig> mapping) : ITopology
 {
     protected ConnectionHandler Connection { get; } = connection;
-    protected MappingConfig Mapping { get; } = mapping;
+    protected MappingConfig Mapping { get; } = mapping.Value;
 
     protected const string ConfigChannelKey = "rabbit-mapping";
 

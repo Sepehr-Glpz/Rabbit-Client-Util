@@ -1,4 +1,5 @@
-﻿using RabbitMQ.Client;
+﻿using Microsoft.Extensions.Options;
+using RabbitMQ.Client;
 using SGSX.RabbitClient.Configuration;
 using SGSX.RabbitClient.Interfaces;
 using System.Threading;
@@ -8,8 +9,8 @@ internal class ConnectionHandler : IRabbitConnection
 {
     #region Constructor
 
-    public ConnectionHandler(ConnectionConfig config) =>
-        (Config, Channels, OnDisconnect) = (config, new(this), new Action(() => { }));
+    public ConnectionHandler(IOptions<ConnectionConfig> config) =>
+        (Config, Channels, OnDisconnect) = (config.Value, new(this), new Action(() => { }));
 
     #endregion
 
