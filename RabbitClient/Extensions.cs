@@ -19,6 +19,13 @@ public static class Extensions
         services.AddRabbitConsumers(assemblies);
     }
 
+    internal const string ON_STARTUP_KEY = "internal-rabbit-startup";
+    public static void AddRabbitMQStartup(this IServiceCollection services, Func<IServiceProvider, IRabbitClient, Task> onStartup)
+    {
+        services.AddKeyedSingleton(ON_STARTUP_KEY, onStartup);
+        services.AddHostedService<StartupService>();
+    }
+
     private const string CONNECTION_SECTION = "Connection";
     private const string MAPPING_SECTION = "Mapping";
 
@@ -40,7 +47,7 @@ public static class Extensions
 
         var scanning = assemblies
                 .SelectMany(asm => asm.DefinedTypes
-                .Where(t => t.IsAssignableTo(typeof(IAsyncHandler))));
+                .Where(t => t.IsAssignableTo(typeof(IAsyncHandler)) || t.IsAssignableTo(typeof(IHandler))));
 
         services.AddSingleton<HandlerFactory>(sp => new HandlerFactory(scanning));
 
