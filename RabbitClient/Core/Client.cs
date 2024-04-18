@@ -1,5 +1,4 @@
-﻿using SGSX.RabbitClient.Interfaces;
-using System.Threading;
+﻿using System.Threading;
 
 namespace SGSX.RabbitClient.Core;
 internal class Client(IRabbitConnection connection, ITopology topology, IConsumer consumer, IPublisher publisher) : IRabbitClient

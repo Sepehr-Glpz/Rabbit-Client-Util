@@ -1,7 +1,7 @@
 ﻿using RabbitMQ.Client;
 
-namespace SGSX.RabbitClient.Interfaces;
+namespace SGSX.RabbitClient;
 public interface IConsumer
 {
-    public IBasicConsumer Consume(string group, string queue, string? consumerTag, bool exclusive, IDictionary<string, object>? args);
+    public IBasicConsumer Consume(string group, string queue, string consumerTag = "", bool exclusive = false, IDictionary<string, object>? args = null);
 }

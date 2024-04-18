@@ -4,8 +4,8 @@ using SGSX.RabbitClient.Configuration;
 using SGSX.RabbitClient.Connection;
 using SGSX.RabbitClient.Core;
 using SGSX.RabbitClient.Handler;
-using SGSX.RabbitClient.Interfaces;
 using System.Reflection;
+using System.Threading;
 
 namespace SGSX.RabbitClient;
 public static class Extensions
@@ -17,10 +17,11 @@ public static class Extensions
         services.AddRabbitTopology();
         services.AddRabbitPublisher();
         services.AddRabbitConsumers(assemblies);
+        services.AddRabbitClient();
     }
 
     internal const string ON_STARTUP_KEY = "internal-rabbit-startup";
-    public static void AddRabbitMQStartup(this IServiceCollection services, Func<IServiceProvider, IRabbitClient, Task> onStartup)
+    public static void AddRabbitMQStartup(this IServiceCollection services, Func<IServiceProvider, IRabbitClient, CancellationToken, Task> onStartup)
     {
         services.AddKeyedSingleton(ON_STARTUP_KEY, onStartup);
         services.AddHostedService<StartupService>();
@@ -63,5 +64,10 @@ public static class Extensions
     {
         services.AddSingleton<TopologyHandler>();
         services.AddSingleton<ITopology, TopologyHandler>(sp => sp.GetRequiredService<TopologyHandler>());
+    }
+
+    private static void AddRabbitClient(this IServiceCollection services)
+    {
+        services.AddSingleton<IRabbitClient, Client>();
     }
 }

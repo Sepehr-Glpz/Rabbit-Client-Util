@@ -1,6 +1,5 @@
 ﻿using SGSX.RabbitClient.Configuration;
 using SGSX.RabbitClient.Connection;
-using SGSX.RabbitClient.Interfaces;
 using Microsoft.Extensions.Options;
 
 namespace SGSX.RabbitClient.Core;

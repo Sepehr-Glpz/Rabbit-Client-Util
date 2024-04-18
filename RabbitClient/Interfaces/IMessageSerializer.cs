@@ -1,7 +1,7 @@
 ﻿
 using System.Threading;
 
-namespace SGSX.RabbitClient.Interfaces;
+namespace SGSX.RabbitClient;
 public interface IMessageSerializer
 {
     TMessage Deserialize<TMessage>(ReadOnlyMemory<byte> data);

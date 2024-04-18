@@ -1,5 +1,4 @@
-﻿using SGSX.RabbitClient.Interfaces;
-using System.IO;
+﻿using System.IO;
 using System.Text.Json;
 using System.Threading;
 

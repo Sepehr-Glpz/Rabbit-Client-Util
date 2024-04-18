@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 
-namespace SGSX.RabbitClient.Interfaces;
+namespace SGSX.RabbitClient;
 public interface IRabbitClient : IDisposable
 {
     Task ConnectAsync(CancellationToken ct);

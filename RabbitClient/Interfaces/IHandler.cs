@@ -1,6 +1,6 @@
 ﻿using SGSX.RabbitClient.Handler;
 
-namespace SGSX.RabbitClient.Interfaces;
+namespace SGSX.RabbitClient;
 public interface IHandler
 {
     HandleResult Handle(HandleArgs args);

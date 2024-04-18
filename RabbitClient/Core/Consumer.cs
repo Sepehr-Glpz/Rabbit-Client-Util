@@ -3,7 +3,6 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using SGSX.RabbitClient.Connection;
 using SGSX.RabbitClient.Handler;
-using SGSX.RabbitClient.Interfaces;
 
 namespace SGSX.RabbitClient.Core;
 internal class Consumer(ConnectionHandler connection, HandlerFactory handlerFactory, IServiceProvider serviceProvider) : IConsumer
@@ -18,7 +17,7 @@ internal class Consumer(ConnectionHandler connection, HandlerFactory handlerFact
 
     #region Methods
 
-    public IBasicConsumer Consume(string group, string queue, string? consumerTag, bool exclusive, IDictionary<string, object>? args)
+    public IBasicConsumer Consume(string group, string queue, string consumerTag, bool exclusive, IDictionary<string, object>? args)
     {
         var channel = KeysThreadChannel($"consumer-{queue}");
 
@@ -45,8 +44,11 @@ internal class Consumer(ConnectionHandler connection, HandlerFactory handlerFact
                     .Select(s => s.HandleAsync(new HandleArgs(s.Serializer, args)));
                 var handles = handlers
                     .Select(s => Task.Factory.StartNew(() => s.Handle(new HandleArgs(s.Serializer, args))));
-                    
+
                 var results = await Task.WhenAll(Enumerable.Union(asyncHandles, handles));
+
+                if (results.Length == 0)
+                    channel.BasicReject(args.DeliveryTag, false);
 
                 var resultSum = results.Aggregate(HandleResult.Undefined, (prev, current) => prev | current);
 

@@ -1,6 +1,6 @@
 ﻿using SGSX.RabbitClient.Handler;
 
-namespace SGSX.RabbitClient.Interfaces;
+namespace SGSX.RabbitClient;
 public interface IAsyncHandler
 {
     Task<HandleResult> HandleAsync(HandleArgs args);

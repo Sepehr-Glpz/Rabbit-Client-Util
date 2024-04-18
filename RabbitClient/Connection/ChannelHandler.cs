@@ -1,5 +1,4 @@
 ﻿using RabbitMQ.Client;
-using SGSX.RabbitClient.Interfaces;
 using System.Collections.Concurrent;
 
 namespace SGSX.RabbitClient.Connection;

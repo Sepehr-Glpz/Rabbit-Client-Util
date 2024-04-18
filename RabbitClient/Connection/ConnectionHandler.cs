@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using SGSX.RabbitClient.Configuration;
-using SGSX.RabbitClient.Interfaces;
 using System.Threading;
 
 namespace SGSX.RabbitClient.Connection;
@@ -71,7 +70,7 @@ internal class ConnectionHandler : IRabbitConnection
                     ),
             };
 
-            ConnectionInstance.ConnectionShutdown += (_,_) => OnDisconnect();
+            ConnectionInstance.ConnectionShutdown += (_, _) => OnDisconnect();
         }
     }
 

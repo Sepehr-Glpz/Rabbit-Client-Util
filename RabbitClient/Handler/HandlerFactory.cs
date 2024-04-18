@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SGSX.RabbitClient.Attributes;
-using SGSX.RabbitClient.Interfaces;
-using System;
 using System.Reflection;
 
 namespace SGSX.RabbitClient.Handler;
@@ -16,28 +14,28 @@ internal class HandlerFactory(IEnumerable<Type> handlerTypes)
     #region Methods
 
     public IEnumerable<IAsyncHandler> GetAsyncHandlers(string group, IServiceProvider provider) =>
-            GroupHandlers[group]
-                .Where(type => type is IAsyncHandler)
+            GroupHandlers.GetValueOrDefault(group)
+                ?.Where(type => type.IsAssignableTo(typeof(IAsyncHandler)))
                 .Select(provider.GetRequiredService)
-                .Cast<IAsyncHandler>();
+                .Cast<IAsyncHandler>() ?? [];
 
     public IEnumerable<IHandler> GetHandlers(string group, IServiceProvider provider) =>
-            GroupHandlers[group]
-                .Where(type => type is IHandler)
+            GroupHandlers.GetValueOrDefault(group)
+                ?.Where(type => type.IsAssignableTo(typeof(IHandler)))
                 .Select(provider.GetRequiredService)
-                .Cast<IHandler>();
+                .Cast<IHandler>() ?? [];
 
     private static Dictionary<string, IEnumerable<Type>> CreateGroupHandlerTypeMap(IEnumerable<Type> types)
     {
         var map = new Dictionary<string, IEnumerable<Type>>();
         foreach (var type in types)
         {
-            if (type.IsAssignableTo(typeof(IAsyncHandler)) || type.IsAssignableTo(typeof(IHandler)))
+            if (!(type.IsAssignableTo(typeof(IAsyncHandler)) || type.IsAssignableTo(typeof(IHandler))))
                 continue;
 
             foreach (var att in type.GetCustomAttributes<HandlerGroupAttribute>())
             {
-                var current = map[att.Group] ?? [];
+                var current = map.GetValueOrDefault(att.Group) ?? [];
 
                 map[att.Group] = current.Append(type);
             }

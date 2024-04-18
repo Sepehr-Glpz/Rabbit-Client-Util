@@ -1,6 +1,5 @@
 ﻿using RabbitMQ.Client;
 using SGSX.RabbitClient.Connection;
-using SGSX.RabbitClient.Interfaces;
 using System.Threading;
 
 namespace SGSX.RabbitClient.Core;
