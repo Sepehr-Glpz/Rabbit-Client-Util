@@ -10,24 +10,11 @@ internal class ConnectionConfig
     public string? DefaultHost { get; set; }
     public ushort? DefaultPort { get; set; } = 5672;
     public required List<Endpoint> Endpoints { get; set; }
-    public bool AsyncConsumers { get; set; }
 
     internal class Endpoint
     {
         public string? Host { get; set; }
         public ushort? Port { get; set; }
-    }
-
-    public static ConnectionConfig operator +(ConnectionConfig left, ConnectionConfig right)
-    {
-        left.Username = right.Username;
-        left.Password = right.Password;
-        left.VirtualHost = right.VirtualHost;
-        left.DefaultHost = right.DefaultHost;
-        left.DefaultPort = right.DefaultPort;
-        left.Endpoints = right.Endpoints;
-        left.AsyncConsumers = right.AsyncConsumers;
-        return left;
     }
 }
 

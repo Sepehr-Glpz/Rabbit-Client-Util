@@ -20,20 +20,16 @@ internal class Consumer(ConnectionHandler connection, HandlerFactory handlerFact
 
     public IBasicConsumer Consume(string group, string queue, string? consumerTag, bool exclusive, IDictionary<string, object>? args)
     {
-        var channel = KeysThreadChannel(queue);
+        var channel = KeysThreadChannel($"consumer-{queue}");
 
-        IBasicConsumer consumer = Connection.IsAsyncConsumeMode switch
-        {
-            true => CreateAsyncConsumer(group, channel),
-            _ => throw new NotImplementedException(),
-        };
+        var consumer = CreateConsumer(group, channel);
 
         channel.BasicConsume(consumer: consumer, queue: queue, autoAck: false, consumerTag: consumerTag, exclusive: exclusive, arguments: args);
 
         return consumer;
     }
 
-    private AsyncEventingBasicConsumer CreateAsyncConsumer(string group, IModel channel)
+    private AsyncEventingBasicConsumer CreateConsumer(string group, IModel channel)
     {
         var consumer = new AsyncEventingBasicConsumer(channel);
         consumer.Received += async (sender, args) =>
@@ -42,9 +38,15 @@ internal class Consumer(ConnectionHandler connection, HandlerFactory handlerFact
             {
                 using var scope = _serviceProvider.CreateScope();
 
-                var handlers = HandlerFactory.GetAsyncHandlers(group, scope.ServiceProvider);
+                var asyncHandlers = HandlerFactory.GetAsyncHandlers(group, scope.ServiceProvider);
+                var handlers = HandlerFactory.GetHandlers(group, scope.ServiceProvider);
 
-                var results = await Task.WhenAll(handlers.Select(s => s.HandleAsync(new HandleArgs(s, args))));
+                var asyncHandles = asyncHandlers
+                    .Select(s => s.HandleAsync(new HandleArgs(s.Serializer, args)));
+                var handles = handlers
+                    .Select(s => Task.Factory.StartNew(() => s.Handle(new HandleArgs(s.Serializer, args))));
+                    
+                var results = await Task.WhenAll(Enumerable.Union(asyncHandles, handles));
 
                 var resultSum = results.Aggregate(HandleResult.Undefined, (prev, current) => prev | current);
 

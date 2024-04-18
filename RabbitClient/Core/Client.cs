@@ -15,4 +15,6 @@ internal class Client(IRabbitConnection connection, ITopology topology, IConsume
     public Task ConnectAsync(CancellationToken ct) => Connection.ConnectAsync(ct);
 
     public Task DisconnectAsync(CancellationToken ct) => Connection.CloseAsync(ct);
+
+    public void Dispose() => Connection?.Dispose();
 }

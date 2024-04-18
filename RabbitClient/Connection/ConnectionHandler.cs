@@ -32,8 +32,6 @@ internal class ConnectionHandler : IRabbitConnection
 
     public bool IsConnected => ConnectionInstance?.IsOpen ?? false;
 
-    public bool IsAsyncConsumeMode => Config.AsyncConsumers;
-
     #endregion
 
     #region Methods
@@ -60,7 +58,7 @@ internal class ConnectionHandler : IRabbitConnection
                 AutomaticRecoveryEnabled = true,
                 NetworkRecoveryInterval = TimeSpan.FromSeconds(3),
                 TopologyRecoveryEnabled = true,
-                DispatchConsumersAsync = Config.AsyncConsumers,
+                DispatchConsumersAsync = true,
             };
 
             ConnectionInstance = Config switch

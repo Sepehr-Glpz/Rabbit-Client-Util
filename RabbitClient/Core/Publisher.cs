@@ -18,7 +18,7 @@ internal class Publisher(ConnectionHandler connection) : IPublisher
 
     public async Task PublishAsync<TMessage>(TMessage message, string exchange, string routeKey, IBasicProperties? props, CancellationToken ct)
     {
-        var channel = KeysThreadChannel($"{exchange}-{routeKey}");
+        var channel = KeysThreadChannel($"publisher-{exchange}-{routeKey}");
 
         var payload = await Serializer.SerializeAsync(message, ct);
 
@@ -27,7 +27,7 @@ internal class Publisher(ConnectionHandler connection) : IPublisher
 
     public void Publish<TMessage>(TMessage message, string exchange, string routeKey, IBasicProperties? props)
     {
-        var channel = KeysThreadChannel($"{exchange}-{routeKey}");
+        var channel = KeysThreadChannel($"publisher-{exchange}-{routeKey}");
 
         var payload = Serializer.Serialize(message);
 
